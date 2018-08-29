@@ -53,11 +53,15 @@ function fun(){
 
 输出配置：
 <br/>
+<br/>
 isAutoName 表示是否启用自动命名，默认为false，不启用，启用时以当前时间戳自动命名压缩后的图片文件。
+<br/>
 <br/>
 limit_size 表示限制压缩的最大尺寸，单位为字节，设置该参数后，图片会压缩直到小于该尺寸或达到最大压缩率为止。
 <br/>
+<br/>
 done  完成的回调函数，当压缩完成后会回调该函数，参数files为压缩后的图片数组，err为错误提示string，如果存在错误，err有值，否则为undefined。
+<br/>
 <br/>
 
 #### progress
