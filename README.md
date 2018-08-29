@@ -7,7 +7,7 @@
 
 <br/>
 
-### 1.取得文件列表
+### 1.取得input file
 
 ```javascript
 document.querySelector('input[type="file"').onchange=fun;
