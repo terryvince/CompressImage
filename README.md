@@ -47,7 +47,7 @@ function fun(){
 
 #### files
 
-源图片列表，由<input type='file'/>取得。
+源图片列表，由input file取得。
 
 #### outConfig
 
