@@ -13,7 +13,7 @@
 		function CompressImage(ob){
 			this.files=ob.files;
 			this.config={
-				isAutoName:false,				//是否启用自动命名，默认以当前文件命名
+				isAutoName:false,				//是否启用自动命名，默认以当前时间戳命名
 				quality:1,						//起始输出图片质量，默认从1开始递减,每次递减0.05，直到压缩到限定尺寸范围或达到最小压缩率为止。
 				limit_size:1*1024*1024			//默认限制压缩输出图片1MB以内
 			};
@@ -52,11 +52,17 @@
 				}
 				for(var i=0;i<this.files.length;i++)
 				{
-					this.config.type=this.files[i].type;
-					this.fileToURL(this.files[i],this.files[i].name);
+					(function(i){
+						me.fileToURL(me.files[i],function(url){
+							me.urlToImg(url,function(img){
+								me.canvasToFile(img,me.files[i]);
+							})
+						});
+					})(i);
 				};
 			}
-			this.dataURLtoFile=function(dataurl, filename) {//将base64转换为文件
+			//base64转文件
+			this.dataURLtoFile=function(dataurl, filename) {
 			    var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
 			    bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
 			    while(n--){
@@ -64,8 +70,8 @@
 			    }
 			    return new File([u8arr], filename, {type:mime});
 			}
-			
-			this.canvasToFile=function(img,filename){
+			//图片绘制到canvas压缩后转为文件
+			this.canvasToFile=function(img,fileOb){
 				var canvas=document.createElement('canvas');
 				canvas.width=img.width;
 				canvas.height=img.height;
@@ -73,15 +79,16 @@
 				ctx.drawImage(img,0,0,canvas.width,canvas.height);
 				if(this.config.isAutoName)
 				{
-					filename=Date.now().toString();
+					fileOb.name=Date.now().toString();
 				}
 				var result={};
-				result=this.dataURLtoFile(canvas.toDataURL(this.config.type,0),filename);
+				result=this.dataURLtoFile(canvas.toDataURL(fileOb.type,0),fileOb.name);
 				if(result.size<this.config.limit_size){
-					result=this.dataURLtoFile(canvas.toDataURL(this.config.type,this.config.quality),filename);
+					result=this.dataURLtoFile(canvas.toDataURL(fileOb.type,this.config.quality),fileOb.name);
 					while(result.size>this.config.limit_size && this.config.quality >0 ){
 						this.config.quality= parseFloat((this.config.quality-0.05).toFixed(2));	
-						result=this.dataURLtoFile(canvas.toDataURL(this.config.type,this.config.quality),filename);
+						result=this.dataURLtoFile(canvas.toDataURL(fileOb.type,this.config.quality),fileOb.name);
+//						console.log(result.size/1024+'KB',this.config.quality);
 					}
 				}
 				this.outFiles.push(result);
@@ -95,20 +102,20 @@
 					this.callBack(this.outFiles);
 				}
 			}
-			
-			this.urlToImg=function(dataUrl,filename){
+			//base64转图片
+			this.urlToImg=function(dataUrl,callback){
 				var img=new Image();
 				img.src=dataUrl;
 				img.onload=function(){
-					me.canvasToFile(img,filename);	
+					callback(img);	
 				};
 			}
-			
-			this.fileToURL=function(fileOb,filename){
+			//文件转base64url
+			this.fileToURL=function(fileOb,callback){
 				var reader=new FileReader();
 				reader.readAsDataURL(fileOb);
-				reader.onload=function(){;
-					me.urlToImg(reader.result,filename);	
+				reader.onload=function(){
+					callback(reader.result);	
 				};
 			}
 			

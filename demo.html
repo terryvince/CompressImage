@@ -3,18 +3,29 @@
 	<head>
 		<meta charset="utf-8" />
 		<title>图片压缩</title>
+		<style type="text/css">
+			#tip{
+				display: none;
+			}
+		</style>
 	</head>
 	<body>
 		<input type="file" multiple="multiple"/>
+		<p id="tip">图片越大，压缩时间越长，请耐心等候图片压缩完成...</p>
 	</body>
 	<script src="dist/compressImage.min.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
+		var elTip=document.querySelector("#tip");
 		function fun(e){
+			
+			elTip.innerHTML="图片越大，压缩时间越长，请耐心等候图片压缩完成...";
+			elTip.style.display="block";
+			
 			var ci=new CompressImage({
 				files:this.files,
 				outConfig:{
 					isAutoName:false,
-					limit_size:1*1024*100
+					limit_size:1*1024*1024*1
 				},
 				done:function(files,err){
 					if(err)
@@ -22,16 +33,30 @@
 						console.error(err);
 						return;
 					}
+					
 					console.log(files);
-					console.log("压缩完成！")
+					
+					elTip.innerHTML="压缩已完成！";
+					elTip.style.display="block";
+					
+					//生成预览图
+					var reader=new FileReader();
+					var img=new Image();
+					reader.readAsDataURL(files[0]);
+					reader.onload=function(){
+						img.src=this.result;
+						img.onload=function(){
+							document.querySelector("body").appendChild(this);	
+						}
+					}
 				},
 				progress:function(compFile){
 					console.info("当前压缩进度为："+(compFile/this.files.length*100).toFixed(2)+"%");
 				}
 			});
 			ci.start();
+			
 		}
 		document.querySelector('input[type="file"]').onchange=fun;
-		
 	</script>
 </html>
