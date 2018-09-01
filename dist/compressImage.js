@@ -13,7 +13,7 @@
 		function CompressImage(ob){
 			this.files=ob.files;
 			this.config={
-				isAutoName:false,				//是否启用自动命名，默认以当前时间戳命名
+				isAutoName:false,				//是否启用自动命名，默认以当前文件命名
 				quality:1,						//起始输出图片质量，默认从1开始递减,每次递减0.05，直到压缩到限定尺寸范围或达到最小压缩率为止。
 				limit_size:1*1024*1024			//默认限制压缩输出图片1MB以内
 			};
