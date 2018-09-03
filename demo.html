@@ -13,11 +13,10 @@
 		<input type="file" multiple="multiple"/>
 		<p id="tip">图片越大，压缩时间越长，请耐心等候图片压缩完成...</p>
 	</body>
-	<script src="dist/compressImage.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="dist/compressImage.js" type="text/javascript" charset="utf-8"></script>
 	<script type="text/javascript">
 		var elTip=document.querySelector("#tip");
 		function fun(e){
-			
 			elTip.innerHTML="图片越大，压缩时间越长，请耐心等候图片压缩完成...";
 			elTip.style.display="block";
 			
@@ -25,7 +24,8 @@
 				files:this.files,
 				outConfig:{
 					isAutoName:false,
-					limit_size:1*1024*1024*1
+					limit_size:1*1024*100,
+					limit_width:300
 				},
 				done:function(files,err){
 					if(err)
